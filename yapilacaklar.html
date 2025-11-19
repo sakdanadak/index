@@ -202,4 +202,114 @@
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    value={new
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && addTask()}
+                    placeholder="Yeni görev ekle..."
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    onClick={addTask}
+                    className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"
+                  >
+                    ➕ Ekle
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h2 className="text-2xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <span className="text-orange-500">⏳</span>
+                    Yapılacaklar
+                    <span className="text-sm text-gray-500 ml-auto">
+                      ({pendingTasks.length})
+                    </span>
+                  </h2>
+
+                  <div className="space-y-3">
+                    {pendingTasks.length === 0 ? (
+                      <p className="text-gray-400 text-center py-8">
+                        Henüz yapılacak görev yok! 🎉
+                      </p>
+                    ) : (
+                      pendingTasks.map((task) => (
+                        <div
+                          key={task.id}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+                        >
+                          <button
+                            onClick={() => toggleTask(task.id)}
+                            className="w-6 h-6 border-2 border-gray-300 rounded hover:border-indigo-500 flex items-center justify-center transition"
+                          ></button>
+                          <span className="flex-1 text-gray-700">
+                            {task.text}
+                          </span>
+                          <button
+                            onClick={() => deleteTask(task.id)}
+                            className="text-red-400 hover:text-red-600 transition"
+                          >
+                            ✖
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h2 className="text-2xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <span className="text-green-500">✅</span>
+                    Yapılanlar
+                    <span className="text-sm text-gray-500 ml-auto">
+                      ({completedTasks.length})
+                    </span>
+                  </h2>
+
+                  <div className="space-y-3">
+                    {completedTasks.length === 0 ? (
+                      <p className="text-gray-400 text-center py-8">
+                        Henüz tamamlanan görev yok
+                      </p>
+                    ) : (
+                      completedTasks.map((task) => (
+                        <div
+                          key={task.id}
+                          className="flex items-center gap-3 p-3 bg-green-50 rounded-lg hover:bg-green-100 transition"
+                        >
+                          <button
+                            onClick={() => toggleTask(task.id)}
+                            className="w-6 h-6 bg-green-500 rounded flex items-center justify-center hover:bg-green-600 transition text-white text-sm"
+                          >
+                            ✓
+                          </button>
+                          <div className="flex-1">
+                            <span className="text-gray-500 line-through block">
+                              {task.text}
+                            </span>
+                            <span className="text-xs text-green-600">
+                              📅 {task.completedDate}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => deleteTask(task.id)}
+                            className="text-red-400 hover:text-red-600 transition"
+                          >
+                            ✖
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<TodoList />);
+    </script>
+  </body>
+</html>
