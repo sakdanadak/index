@@ -1,244 +1,205 @@
-import React, { useState } from 'react';
-import { Check, Plus, X, History, ArrowLeft, Info } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Yapılacaklar Listem</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-export default function TodoList() {
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState('');
-  const [logs, setLogs] = useState([]);
-  const [showLogs, setShowLogs] = useState(false);
+    <!-- React ve ReactDOM CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
 
-  const addLog = (action, taskText) => {
-    const logEntry = {
-      id: Date.now(),
-      action,
-      taskText,
-      timestamp: new Date().toLocaleString('tr-TR')
-    };
-    setLogs([logEntry, ...logs]);
-  };
+    <!-- JSX yazabilmek için Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div id="root"></div>
 
-  const addTask = () => {
-    if (newTask.trim()) {
-      setTasks([...tasks, {
-        id: Date.now(),
-        text: newTask,
-        completed: false,
-        completedDate: null
-      }]);
-      addLog('eklendi', newTask);
-      setNewTask('');
-    }
-  };
+    <script type="text/babel">
+      const { useState } = React;
 
-  const toggleTask = (id) => {
-    const task = tasks.find(t => t.id === id);
-    setTasks(tasks.map(t => 
-      t.id === id 
-        ? { 
-            ...t, 
-            completed: !t.completed,
-            completedDate: !t.completed ? new Date().toLocaleDateString('tr-TR') : null
+      function TodoList() {
+        const [tasks, setTasks] = useState([]);
+        const [newTask, setNewTask] = useState("");
+        const [logs, setLogs] = useState([]);
+        const [showLogs, setShowLogs] = useState(false);
+
+        const addLog = (action, taskText) => {
+          const logEntry = {
+            id: Date.now(),
+            action,
+            taskText,
+            timestamp: new Date().toLocaleString("tr-TR"),
+          };
+          setLogs([logEntry, ...logs]);
+        };
+
+        const addTask = () => {
+          if (newTask.trim()) {
+            setTasks([
+              ...tasks,
+              {
+                id: Date.now(),
+                text: newTask,
+                completed: false,
+                completedDate: null,
+              },
+            ]);
+            addLog("eklendi", newTask);
+            setNewTask("");
           }
-        : t
-    ));
-    addLog(task.completed ? 'yapılacaklara_taşındı' : 'tamamlandı', task.text);
-  };
+        };
 
-  const deleteTask = (id) => {
-    const task = tasks.find(t => t.id === id);
-    setTasks(tasks.filter(t => t.id !== id));
-    addLog('silindi', task.text);
-  };
+        const toggleTask = (id) => {
+          const task = tasks.find((t) => t.id === id);
+          setTasks(
+            tasks.map((t) =>
+              t.id === id
+                ? {
+                    ...t,
+                    completed: !t.completed,
+                    completedDate: !t.completed
+                      ? new Date().toLocaleDateString("tr-TR")
+                      : null,
+                  }
+                : t
+            )
+          );
+          addLog(
+            task.completed ? "yapılacaklara_taşındı" : "tamamlandı",
+            task.text
+          );
+        };
 
-  const clearLogs = () => {
-    if (confirm('Tüm log kayıtları silinecek. Emin misiniz?')) {
-      setLogs([]);
-    }
-  };
+        const deleteTask = (id) => {
+          const task = tasks.find((t) => t.id === id);
+          setTasks(tasks.filter((t) => t.id !== id));
+          addLog("silindi", task.text);
+        };
 
-  const getLogIcon = (action) => {
-    switch(action) {
-      case 'eklendi': return '➕';
-      case 'tamamlandı': return '✅';
-      case 'yapılacaklara_taşındı': return '↩️';
-      case 'silindi': return '🗑️';
-      default: return '📝';
-    }
-  };
+        const clearLogs = () => {
+          if (confirm("Tüm log kayıtları silinecek. Emin misiniz?")) {
+            setLogs([]);
+          }
+        };
 
-  const getLogText = (action) => {
-    switch(action) {
-      case 'eklendi': return 'eklendi';
-      case 'tamamlandı': return 'tamamlandı';
-      case 'yapılacaklara_taşındı': return 'yapılacaklara taşındı';
-      case 'silindi': return 'silindi';
-      default: return '';
-    }
-  };
+        const getLogIcon = (action) => {
+          switch (action) {
+            case "eklendi":
+              return "➕";
+            case "tamamlandı":
+              return "✅";
+            case "yapılacaklara_taşındı":
+              return "↩️";
+            case "silindi":
+              return "🗑️";
+            default:
+              return "📝";
+          }
+        };
 
-  const pendingTasks = tasks.filter(task => !task.completed);
-  const completedTasks = tasks.filter(task => task.completed);
+        const getLogText = (action) => {
+          switch (action) {
+            case "eklendi":
+              return "eklendi";
+            case "tamamlandı":
+              return "tamamlandı";
+            case "yapılacaklara_taşındı":
+              return "yapılacaklara taşındı";
+            case "silindi":
+              return "silindi";
+            default:
+              return "";
+          }
+        };
 
-  if (showLogs) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-4 mb-6">
-            <button
-              onClick={() => setShowLogs(false)}
-              className="bg-white p-2 rounded-lg shadow hover:shadow-md transition"
-            >
-              <ArrowLeft size={24} />
-            </button>
-            <h1 className="text-4xl font-bold text-gray-800">
-              📜 Geçmiş Kayıtları
-            </h1>
-          </div>
+        const pendingTasks = tasks.filter((task) => !task.completed);
+        const completedTasks = tasks.filter((task) => task.completed);
 
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-gray-600">Toplam {logs.length} kayıt</p>
-              {logs.length > 0 && (
-                <button
-                  onClick={clearLogs}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Tüm Kayıtları Temizle
-                </button>
-              )}
-            </div>
+        if (showLogs) {
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-6">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex items-center gap-4 mb-6">
+                  <button
+                    onClick={() => setShowLogs(false)}
+                    className="bg-white p-2 rounded-lg shadow hover:shadow-md transition"
+                  >
+                    ⬅
+                  </button>
+                  <h1 className="text-4xl font-bold text-gray-800">
+                    📜 Geçmiş Kayıtları
+                  </h1>
+                </div>
 
-            <div className="space-y-2 max-h-[600px] overflow-y-auto">
-              {logs.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">Henüz log kaydı yok</p>
-              ) : (
-                logs.map(log => (
-                  <div key={log.id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                    <span className="text-2xl">{getLogIcon(log.action)}</span>
-                    <div className="flex-1">
-                      <p className="text-gray-700">
-                        <span className="font-semibold">"{log.taskText}"</span>
-                        {' '}{getLogText(log.action)}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <p className="text-gray-600">
+                      Toplam {logs.length} kayıt
+                    </p>
+                    {logs.length > 0 && (
+                      <button
+                        onClick={clearLogs}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Tüm Kayıtları Temizle
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                    {logs.length === 0 ? (
+                      <p className="text-gray-400 text-center py-8">
+                        Henüz log kaydı yok
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">🕐 {log.timestamp}</p>
-                    </div>
+                    ) : (
+                      logs.map((log) => (
+                        <div
+                          key={log.id}
+                          className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+                        >
+                          <span className="text-2xl">
+                            {getLogIcon(log.action)}
+                          </span>
+                          <div className="flex-1">
+                            <p className="text-gray-700">
+                              <span className="font-semibold">
+                                "{log.taskText}"
+                              </span>{" "}
+                              {getLogText(log.action)}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              🕐 {log.timestamp}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
-                ))
-              )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+          );
+        }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">
-            📝 Yapılacaklar Listem
-          </h1>
-          <button
-            onClick={() => setShowLogs(true)}
-            className="bg-white px-4 py-2 rounded-lg shadow hover:shadow-md transition flex items-center gap-2"
-          >
-            <History size={20} />
-            Geçmiş ({logs.length})
-          </button>
-        </div>
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex justify-between items-center mb-8">
+                <h1 className="text-4xl font-bold text-gray-800">
+                  📝 Yapılacaklar Listem
+                </h1>
+                <button
+                  onClick={() => setShowLogs(true)}
+                  className="bg-white px-4 py-2 rounded-lg shadow hover:shadow-md transition flex items-center gap-2"
+                >
+                  🕒 Geçmiş ({logs.length})
+                </button>
+              </div>
 
-        {/* Yeni görev ekleme */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newTask}
-              onChange={(e) => setNewTask(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addTask()}
-              placeholder="Yeni görev ekle..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            <button
-              onClick={addTask}
-              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"
-            >
-              <Plus size={20} />
-              Ekle
-            </button>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Yapılacaklar */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
-              <span className="text-orange-500">⏳</span>
-              Yapılacaklar
-              <span className="text-sm text-gray-500 ml-auto">({pendingTasks.length})</span>
-            </h2>
-            
-            <div className="space-y-3">
-              {pendingTasks.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">Henüz yapılacak görev yok! 🎉</p>
-              ) : (
-                pendingTasks.map(task => (
-                  <div key={task.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                    <button
-                      onClick={() => toggleTask(task.id)}
-                      className="w-6 h-6 border-2 border-gray-300 rounded hover:border-indigo-500 flex items-center justify-center transition"
-                    >
-                    </button>
-                    <span className="flex-1 text-gray-700">{task.text}</span>
-                    <button
-                      onClick={() => deleteTask(task.id)}
-                      className="text-red-400 hover:text-red-600 transition"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Yapılanlar */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
-              <span className="text-green-500">✅</span>
-              Yapılanlar
-              <span className="text-sm text-gray-500 ml-auto">({completedTasks.length})</span>
-            </h2>
-            
-            <div className="space-y-3">
-              {completedTasks.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">Henüz tamamlanan görev yok</p>
-              ) : (
-                completedTasks.map(task => (
-                  <div key={task.id} className="flex items-center gap-3 p-3 bg-green-50 rounded-lg hover:bg-green-100 transition">
-                    <button
-                      onClick={() => toggleTask(task.id)}
-                      className="w-6 h-6 bg-green-500 rounded flex items-center justify-center hover:bg-green-600 transition"
-                    >
-                      <Check size={16} className="text-white" />
-                    </button>
-                    <div className="flex-1">
-                      <span className="text-gray-500 line-through block">{task.text}</span>
-                      <span className="text-xs text-green-600">📅 {task.completedDate}</span>
-                    </div>
-                    <button
-                      onClick={() => deleteTask(task.id)}
-                      className="text-red-400 hover:text-red-600 transition"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+              <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={new
